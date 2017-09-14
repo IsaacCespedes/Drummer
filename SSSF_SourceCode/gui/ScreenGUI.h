@@ -26,20 +26,20 @@ class ScreenGUI
 {
 private:
 	// THE BUTTONS FOR THIS SCREEN
-	list<Button*>		*buttons;
+	//list<Button*>		*buttons;
+	map<const wstring, Button*> *buttons;
 
 	// ADDITIONAL IMAGES FOR THIS SCREEN, LIKE BORDERS OR 
-	list<OverlayImage*> *overlayImages;
-
+	//list<OverlayImage*> *overlayImages;
+	map<const int, OverlayImage*> *overlayImages;
 	// SCREEN NAME, LIKE "MAIN MENU"
 	wchar_t				*screenName;
 
 public:
 	// INLINED ACCESSOR METHODS
-	int getNumButtons()			{ return buttons->size();	}	
+	int getNumButtons()			{ return buttons->size();		}
 	int getNumOverlayImages()	{ return overlayImages->size(); }
 	wstring getScreenName()			{ return screenName;			}
-	//OverlayImage * getScrollMarkImage()	{ return scrollMarkImage;}
 
 	// INLINED MUTATOR METHODS
 	void setScreenName(wchar_t *initScreenName)
@@ -47,15 +47,13 @@ public:
 		screenName = initScreenName;
 	}
 
-
-
 	// METHODS DEFINED IN ScreenGUI.cpp
 	ScreenGUI();
 	~ScreenGUI();
-	void addButton(Button *buttonToAdd);
-	void addOverlayImage(OverlayImage *imageToAdd);
+	void addButton(Button *buttonToAdd, wstring cmd);
+	void addOverlayImage(OverlayImage *imageToAdd, int id);
 	void addRenderItemsToRenderList(RenderList *renderList);
 	bool fireButtonCommand(Game *game);
 	void registerButtonEventHandler(ButtonEventHandler *eventHandler);
-	void updateAllButtons(Game *game, long mouseX, long mouseY);
+	void updateAllButtons(long mouseX, long mouseY);
 };

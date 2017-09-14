@@ -11,7 +11,6 @@
 #pragma once
 #include "stdafx.h"
 #include "SSSF_SourceCode\gsm\ai\Bot.h"
-#include "SSSF_SourceCode\gsm\ai\NoteBot.h"
 #include "SSSF_SourceCode\gsm\physics\PhysicalProperties.h"
 #include "SSSF_SourceCode\graphics\GameGraphics.h"
 #include "SSSF_SourceCode\sound\GameSound.h"
@@ -19,7 +18,6 @@
 #include "SSSF_SourceCode\gsm\sprite\AnimatedSpriteType.h"
 #include "SSSF_SourceCode\gsm\sprite\SpriteManager.h"
 #include "SSSF_SourceCode\gsm\state\GameStateManager.h"
-
 
 const char* SpriteManager::sounds[] = {"crash", "hihat", "snare", "hitom", "midtom", "lotom", "kick"};
 const wstring SpriteManager::playedStates[] = {L"NOTE_1_PLAYED", L"NOTE_2_PLAYED", L"NOTE_3_PLAYED", L"NOTE_4_PLAYED", L"NOTE_5_PLAYED", L"NOTE_6_PLAYED", L"NOTE_7_PLAYED"};
@@ -112,6 +110,62 @@ unsigned int SpriteManager::addSpriteType(AnimatedSpriteType *spriteTypeToAdd)
 	return spriteTypes.size()-1;
 }
 
+void SpriteManager::animateNote(Game * game, int & l, int & r)
+{
+	if(bots.empty())
+		return;
+
+	int totalNotes = game->getGSM()->getWorld()->getWorldWidth()/16;
+
+	if(currentNote >= totalNotes)
+	{
+		currentCol = bots.begin();
+		lastCol = bots.begin();
+		currentNote = 0;
+		return;
+	}
+	if(currentCol == bots.end())
+		return;
+
+	//int totalNotes = game->getGSM()->getWorld()->getWorldWidth()/16;
+	list<Bot*>::iterator noteAnimation = currentCol;
+
+	/*if(currentNote >= totalNotes)
+	{
+		currentCol = bots.begin();
+		lastCol = bots.begin();
+		currentNote = 0;
+		return;
+	}*/
+
+	while(noteAnimation != bots.end())
+		{
+			NoteBot * nb =  static_cast <NoteBot *>(*noteAnimation);
+			if(currentNote == nb->getRow())
+			{
+				int col = nb->getCol();
+
+				if(col == 0 || col == 2 || col == 4)
+					l = col;
+				if(col == 1 || col == 3 || col == 5)
+					r = col;
+			}
+			if(currentNote < nb->getRow())
+				return;
+			noteAnimation++;
+		}
+
+
+	//reset if all the notes have been played
+	/*if(lastCol == bots.end())
+	{
+		currentCol = bots.begin();
+		lastCol = bots.begin();
+		currentNote = 0;
+		return false;
+	}*/
+}
+
 /*
 	clearSprites - This empties all of the sprites and sprite types.
 */
@@ -120,7 +174,6 @@ void SpriteManager::clearSprites()
 	spriteTypes.clear();
 	bots.clear();
 }
-
 //given mouse coordinates, either add or delete a note 
 void SpriteManager::editNote(int x, int y)
 {
@@ -139,6 +192,8 @@ void SpriteManager::editNote(int x, int y)
 		{
 			recyclableBots.recycleBot(L"notebot", nb);
 			bots.remove(*botIterator);
+			currentCol = bots.begin();
+			lastCol = bots.begin();
 			return;
 		}
 		botIterator++;
@@ -174,6 +229,9 @@ void SpriteManager::editNote(int x, int y)
 //play the sound for each active note
 bool SpriteManager::playNotes(Game * game)
 {
+	if(bots.empty())
+		return false;
+
 	int totalNotes = game->getGSM()->getWorld()->getWorldWidth()/16;
 
 	if(currentNote >= totalNotes)
@@ -201,8 +259,9 @@ bool SpriteManager::playNotes(Game * game)
 			NoteBot * nb =  static_cast <NoteBot *>(*currentCol);
 			if(currentNote == nb->getRow())
 			{
+				nb->getCurrentState();
 				nb->setCurrentState(playedStates[nb->getCol()]);
-				game->getSound()->playSound(sounds[nb->getCol()]);
+				game->getSound()->playSound(nb->getCol());
 			}
 			if(currentNote < nb->getRow())
 			{
@@ -258,6 +317,7 @@ void SpriteManager::unloadSprites()
 Bot* SpriteManager::removeBot(Bot *botToRemove)
 {
 	return NULL;
+	// @TODO
 }
 
 /*
@@ -275,7 +335,8 @@ void SpriteManager::update(Game *game)
 	botIterator = bots.begin();
 	while (botIterator != bots.end())
 	{
-		(*botIterator)->updateSprite();
+		Bot *bot = (*botIterator);
+		bot->updateSprite();
 		botIterator++;
 	}
 }

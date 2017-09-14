@@ -24,14 +24,12 @@ Button::Button()
 {
 	normalTextureID = 0;
 	mouseOverTextureID = 0;
-	deactivatedTextureID = 0;
 	x = 0;
 	y = 0;
 	z = 0;
 	width = 0;
 	height = 0;
 	mouseOver = false;
-	deactivated = false;
 	eventHandler = NULL;
 }
 

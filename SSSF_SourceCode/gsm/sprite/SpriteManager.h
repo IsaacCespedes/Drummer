@@ -16,6 +16,7 @@
 #include "SSSF_SourceCode\gsm\ai\BotRecycler.h"
 #include "SSSF_SourceCode\gsm\sprite\AnimatedSprite.h"
 #include "SSSF_SourceCode\gsm\sprite\AnimatedSpriteType.h"
+#include "SSSF_SourceCode\gsm\ai\NoteBot.h"
 
 class SpriteManager
 {
@@ -35,13 +36,12 @@ private:
 	// WE NEED TO SPAWN THEM, INSTEAD IT WILL RECYCLE THEM FOR US
 	BotRecycler recyclableBots;
 
-	//each sprite is associated with a sound and has an played and confirmed state
 	static const char* sounds[];
 	static const wstring playedStates[];
 	static const wstring confirmedStates[];
 
 	//drum piece placeholder 
-	int currentNote;
+	unsigned int currentNote;
 
 	//sprites have a location based on when they should be played 
 	//they switch states if they are being played or were just played
@@ -49,8 +49,7 @@ private:
 	list<Bot*>::iterator lastCol;
 
 public:
-	// NOTHING TO INIT OR DESTROY
-	SpriteManager()		{}
+	SpriteManager()		{currentNote = 0;}
 	~SpriteManager()	{}
 
 	// INLINED ACCESSOR METHODS
@@ -65,6 +64,7 @@ public:
 	void				addSpriteItemsToRenderList(Game *game);
 	unsigned int		addSpriteType(AnimatedSpriteType *spriteTypeToAdd);
 	void				addSpriteToRenderList(AnimatedSprite *sprite, RenderList *renderList, Viewport *viewport);
+	void				animateNote(Game * game, int & l, int & r);
 	void				clearSprites();
 	void				editNote(int x, int y);
 	AnimatedSpriteType* getSpriteType(unsigned int typeIndex);

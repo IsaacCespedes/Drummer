@@ -20,7 +20,7 @@ const int MAX_TEXT_OBJECTS = 10;
 class TextToDraw
 {
 private:
-	wstring text;
+	wstring *text;
 
 public:
 	TextToDraw()	{}
@@ -32,18 +32,18 @@ public:
 	int width;
 	int height;
 
-	void setText(wstring textToSet)
+	void setText(wstring *textToSet)
 	{
 		text = textToSet;
 	}
-	wstring getText() { return text; }
+	wstring* getText() { return text; }
 };
 
 class GameText
 {
 private:
 	int textCounter;
-	vector<TextToDraw*> *textToDraw;
+	vector<TextToDraw> *textToDraw;
 	TextGenerator *textGenerator;
 
 	// USED TO PRINT DEBUGGING OUTPUT
@@ -53,7 +53,7 @@ public:
 	// INLINED ACCESSOR METHODS
 	int				getNumTextObjectsToDraw()		{	return textToDraw->size();		}
 	TextGenerator*	getTextGenerator()				{	return textGenerator;			}
-	TextToDraw*		getTextToDrawAtIndex(int index)	{	return textToDraw->at(index);	}	
+	TextToDraw		getTextToDrawAtIndex(int index)	{	return textToDraw->at(index);	}	
 
 	// INLINED MUTATOR METHOD
 	void setTextGenerator(TextGenerator *initTextGenerator)
@@ -64,8 +64,8 @@ public:
 	// METHODS DEFINED IN GameText.cpp
 	GameText();
 	~GameText();
-	void addText(wstring textToAdd, int initX, int initY, int initWidth, int initHeight);
-	void changeTextOnly(wstring textToAdd, int index);
+	void addText(wstring *textToAdd, int initX, int initY, int initWidth, int initHeight);
+	void changeTextOnly(wstring *textToAdd, int index);
 	void initDebugFile(string debugFileName);
 	void moveText(int index, int xMove, int yMove);
 	void writeDebugOutput(string output);

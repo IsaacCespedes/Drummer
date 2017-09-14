@@ -32,18 +32,17 @@ public:
 		nCmdShow = initNCmdShow;
 	}
 
+
 	// THESE SHOULD BE LOADING DATA FROM FILES. THEY
 	// ARE ALL DEFINED IN DrummerBoyDataLoader.cpp
 	void loadGame(Game *game, wstring gameInitFile);
 	void loadGUI(Game *game, wstring guiInitFile);
-	void loadModel(Game * game);
 	void loadWorld(Game *game, wstring levelInitFile);
 	void loadSprites(Game * game);
 
 	// SOME HELPER METHODS FOR SETTING UP THE GAME
 	void initColors(GameGraphics *graphics,	map<wstring,wstring> *properties);
 	void initViewport(GameGUI *gui, map<wstring,wstring> *properties);
-	void initModelViewport(GameGUI *gui);
 
 	// AND SOME HELPER METHODS FOR LOADING THE GUI
 	void initCursor(GameGUI *gui, DirectXTextureManager *guiTextureManager);

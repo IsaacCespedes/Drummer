@@ -77,7 +77,7 @@ void Game::initPlatformPlugins(		GameGraphics *initGraphics,
 {
 	// INITIALIZE ALL OF THE GAME'S CUSTOM OBJECTS
 	graphics = initGraphics;
-	sound	= initSound;
+	sound = initSound;
 	input = initInput;
 	os = initOS;
 	timer = initTimer;
@@ -138,11 +138,11 @@ void Game::runGameLoop()
 			// USE THE INPUT TO UPDATE THE GAME
 			processGameData();
 
-			if(sound->isThereEngine())
-				sound->work();
-
 			// AND RENDER THE GAME
 			graphics->renderGame(this);
+
+			//if(sound->isThereEngine())
+			//	sound->work();
 		}
 	}
 }
@@ -185,7 +185,6 @@ void Game::quitGame()
 {
 	// CLEAN UP ALL THE WORLD TEXTURES
 	graphics->clearWorldTextures();
-
 	// WE'RE GOING BACK TO THE MAIN MENU
 	gsm->goToMainMenu();
 }
@@ -201,6 +200,7 @@ void Game::shutdown()
 	// UP ALL THE MEMORY IT IS USING
 	gsm->shutdown();
 
+	
 	// CLEAR OUT AND RELEASE THE GPU
 	graphics->shutdown();
 

@@ -17,10 +17,9 @@
 #include "SSSF_SourceCode\timer\GameTimer.h"
 #include "SSSF_SourceCode\PlatformPlugins\WindowsPlugin\WindowsTimer.h"
 
-static const wstring	DBG_TARGET_FPS_TEXT = L"TARGET FPS: ";
-static const int		DBG_TARGET_FPS_X	= 350;
-static const int		DBG_TARGET_FPS_Y	= 50;
-
+static const wstring	DG_TARGET_FPS_TEXT = L"TARGET FPS: ";
+static const int		DG_TARGET_FPS_X	= 350;
+static const int		DG_TARGET_FPS_Y	= 50;
 
 /*
 	appendTargetFPS - this method gets and appends the target frame rate to
@@ -33,7 +32,7 @@ void DrummerBoyTextGenerator::appendTargetFPS(Game *game)
 	WindowsTimer *timer = (WindowsTimer*)game->getTimer();
 
 	// BUILD THE WIDE STRING
-	textToGenerate.append(DBG_TARGET_FPS_TEXT);
+	textToGenerate.append(DG_TARGET_FPS_TEXT);
 	wss << timer->getTargetFPS();
 	textToGenerate.append(wss.str());
 }
@@ -51,7 +50,7 @@ void DrummerBoyTextGenerator::initText(Game *game)
 
 	// AND THEN HAND IT TO THE TEXT MANAGER, SPECIFYING WHERE IT SHOULD BE RENDERED
 	GameText *text = game->getText();
-	text->addText(textToGenerate, 350, 50, game->getGraphics()->getScreenWidth(), game->getGraphics()->getScreenHeight());
+	text->addText(&textToGenerate, 350, 50, game->getGraphics()->getScreenWidth(), game->getGraphics()->getScreenHeight());
 }
 
 /*

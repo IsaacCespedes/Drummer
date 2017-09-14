@@ -50,7 +50,6 @@ void World::addLayer(WorldLayer *layerToAdd)
 	layers->push_back(layerToAdd);
 }
 
-
 /*
 	addWorldRenderItemsToRenderList - This method sends the render
 	list and viewport to each of the layers such that they

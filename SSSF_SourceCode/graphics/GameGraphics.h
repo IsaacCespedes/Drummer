@@ -19,7 +19,6 @@
 #include "SSSF_SourceCode\game\Game.h"
 #include "SSSF_SourceCode\game\WStringTable.h"
 #include "SSSF_SourceCode\graphics\RenderList.h"
-#include "SSSF_SourceCode\graphics\VertexList.h"
 #include "SSSF_SourceCode\graphics\TextureManager.h"
 #include "SSSF_SourceCode\gsm\state\GameStateManager.h"
 #include "SSSF_SourceCode\gui\GameGUI.h"
@@ -41,8 +40,6 @@ protected:
 	// DATA, THEN USED FOR RENDERING THE FRAME, AND DESTROYED
 	RenderList				*guiRenderList;
 	RenderList				*worldRenderList;
-	//VertexList				*modelVertexList;
-	
 
 	// NOTE THAT IF WE REALLY WANTED TO BE SLICK, WE COULD PROVIDE
 	// MULTIPLE WORLD RENDER LISTS, ONE FOR EACH Z-LEVEL
@@ -57,19 +54,18 @@ public:
 	TextureManager*			getGUITextureManager()		{ return guiTextureManager;		}
 	RenderList*				getWorldRenderList()		{ return worldRenderList;		}
 	TextureManager*			getWorldTextureManager()	{ return worldTextureManager;	}
-	VertexList*				getVertexList()				{return NULL;}//modelVertexList;}
 
 	// VIRTUAL METHODS TO BE OVERRIDDEN BY TECHNOLOGY
 	// SPECIFIC CLASSES
+	virtual void			animate(int l, int r)=0;
 	virtual	TextureManager* createTextureManager()=0;
 	virtual int				getScreenHeight()=0;
 	virtual int				getScreenWidth()=0;
 	virtual	void			initGraphics(HWND hWnd, bool isFullscreen)=0;
 	virtual void			initTextFont(int fontSize)=0;
-	virtual void			initVertices()=0;
 	virtual void			reloadGraphics()=0;
 	virtual void			renderGame(Game *game)=0;
-	virtual void			renderTextToDraw(TextToDraw *textToDraw)=0;		
+	virtual void			renderTextToDraw(TextToDraw textToDraw)=0;
 	virtual void			setColorKey(int r, int g, int b)=0;
 	virtual void			setFontColor(int r, int g, int b)=0;
 	virtual void			shutdown()=0;
@@ -78,6 +74,7 @@ public:
 	GameGraphics();
 	~GameGraphics();
 	void clearWorldTextures();
+	void clearGUITextures();
 	void fillRenderLists(Game *game);
 	void init(int screenWidth, int screenHeight);
 	void renderText(GameText *text);

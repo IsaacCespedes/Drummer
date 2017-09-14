@@ -27,7 +27,7 @@ WindowsTimer::WindowsTimer()
 {
 	// LET'S START WITH A TARGET FPS OF 33 FRAMES PER SECOND,
 	// THAT'S 30 ms PER FRAME
-	targetFPS = 33;
+	targetFPS = 30;
 
 	// GET INFORMATION ABOUT HOW GOOD 
 	// THE SYSTEM'S TIMER IS
@@ -177,9 +177,6 @@ void WindowsTimer::timeGameLoop()
 		actualLoopRate = DWORD(1000);
 	else
 		sleeplessLoopRate = 1000 / sleeplessLoopTime;
-
-	if(targetMillisPerFrame < sleeplessLoopTime)
-		bool tooSlow = true;
 
 	// IF THIS PAST FRAME RAN TOO FAST IT'S
 	// LIKELY THE NEXT FRAME WILL RUN FAST ALSO

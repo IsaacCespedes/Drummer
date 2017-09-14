@@ -45,18 +45,18 @@ void Physics::update(Game *game)
 	// DETECTION OR RESPONSE
 	GameStateManager *gsm = game->getGSM();
 	SpriteManager *sm = gsm->getSpriteManager();
-	AnimatedSprite *player;
+	//AnimatedSprite *player;
 	PhysicalProperties *pp;
 
 	// FIRST WE'LL MOVE THE PLAYER
-///	player = sm->getPlayer();
-//	pp = player->getPhysicalProperties();
-//	pp->setPosition(pp->getX() + pp->getVelocityX(), pp->getY() + pp->getVelocityY());
+	//player = sm->getPlayer();
+	//pp = player->getPhysicalProperties();
+	//pp->setPosition(pp->getX() + pp->getVelocityX(), pp->getY() + pp->getVelocityY());
 
 	// FOR NOW THE PLAYER IS DIRECTLY CONTROLLED BY THE KEYBOARD,
 	// SO WE'LL NEED TO TURN OFF ANY VELOCITY APPLIED BY INPUT
 	// SO THE NEXT FRAME IT DOESN'T GET ADDED
-	pp->setVelocity(0.0f, 0.0f);
+	//pp->setVelocity(0.0f, 0.0f);
 
 	// AND NOW MOVE ALL THE BOTS
 	list<Bot*>::iterator botIterator = sm->getBotsIterator();

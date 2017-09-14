@@ -14,7 +14,6 @@ BotRecycler::BotRecycler()
 */
 BotRecycler::~BotRecycler()
 {
-
 	for(map<wstring, list<Bot *> *>::iterator it  = recyclableBots.begin(); it != recyclableBots.end(); ++it)
 	{
 		while(!(*it).second->empty())

@@ -25,4 +25,5 @@ TextureManager::TextureManager()
 */
 TextureManager::~TextureManager() 
 {
+	// TODO Delete strings in string table
 }

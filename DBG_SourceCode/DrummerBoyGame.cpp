@@ -15,7 +15,7 @@
 
 #include "stdafx.h"
 
-// DUMMY GAME INCLUDES
+// drummerboy GAME INCLUDES
 #include "DBG_SourceCode\DrummerBoyButtonEventHandler.h"
 #include "DBG_SourceCode\DrummerBoyDataLoader.h"
 #include "DBG_SourceCode\DrummerBoyGame.h"
@@ -41,7 +41,7 @@
 // DIRECTX INCLUDES
 #include "SSSF_SourceCode\PlatformPlugins\DirectXPlugin\DirectXGraphics.h"
 #include "SSSF_SourceCode\PlatformPlugins\DirectXPlugin\DirectXTextureManager.h"
-#include "SSSF_SourceCode\PlatformPlugins\DirectXPlugin\XactSound.h"
+#include "SSSF_SourceCode\PlatformPlugins\DirectXPlugin\DirectXSound.h"
 
 /*
 	WinMain - This is the application's starting point. In this method we will construct a Game object, 
@@ -56,11 +56,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	// CREATE THE GAME
 	Game *drummerBoyGame = new Game();
 
-	// FIRST WE'LL SETUP THE DATA LOADER, SINCE IT MAY NEED TO READ IN DATA TO SETUP OTHER STUFF
+	// FIRST WE'LL SETUP THE DATA LOADER, SINCE IT MAY NEED TO READ
+	// IN DATA TO SETUP OTHER STUFF
 	DrummerBoyDataLoader *drummerBoyDataLoader = new DrummerBoyDataLoader();
 	drummerBoyDataLoader->initWinHandle(hInstance, nCmdShow);
 	drummerBoyGame->setDataLoader(drummerBoyDataLoader);
-	drummerBoyDataLoader->loadGame(drummerBoyGame, DBG_INIT_FILE);
+	drummerBoyDataLoader->loadGame(drummerBoyGame, DG_INIT_FILE);
 	
 	// WHAT WE SHOULD BE DOING HERE IS LOADING THE GAME DATA FROM FILES. THIS
 	// MEANS THE GUIS THEMSELVES AS WELL AS THE LEVELS. THAT WILL BE LEFT
@@ -68,7 +69,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	// LOAD THE GUI STUFF, AGAIN, NOTE THAT THIS SHOULD REALLY
 	// BE DONE FROM A FILE, NOT HARD CODED
-	drummerBoyDataLoader->loadGUI(drummerBoyGame, DBG_GUI_INIT_FILE);
+	drummerBoyDataLoader->loadGUI(drummerBoyGame, DG_GUI_INIT_FILE);
 
 	// SPECIFY WHO WILL HANDLE BUTTON EVENTS
 	DrummerBoyButtonEventHandler *drummerBoyButtonHandler = new DrummerBoyButtonEventHandler();
@@ -79,13 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	DrummerBoyKeyEventHandler *drummerBoyKeyHandler = new DrummerBoyKeyEventHandler();
 	drummerBoyGame->getInput()->registerKeyHandler((KeyEventHandler*)drummerBoyKeyHandler);
 
-	// AND UPDATE THE GAME STATE OF COURSE
-	drummerBoyGame->getGSM()->goToLoadLevel();	// NOTE THAT CURRENTLY HTERE IS NO LEVEL FILE,
-	
-	// THAT'S ONE THING YOU'LL BE DOING
-	drummerBoyDataLoader->loadWorld(drummerBoyGame, L"THERE IS NO FILE");
-	drummerBoyDataLoader->loadSprites(drummerBoyGame);
-	drummerBoyDataLoader->loadModel(drummerBoyGame);
+	drummerBoyGame->startGame();
 
 	// START THE GAME LOOP
 	drummerBoyGame->runGameLoop();
@@ -95,13 +90,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	delete (WindowsInput*)drummerBoyGame->getInput();
 	delete (WindowsTimer*)drummerBoyGame->getTimer();
 	delete (DirectXGraphics*)drummerBoyGame->getGraphics();
-	//delete (DirectXTextureManager*) drummerBoyGame->getGraphics()->getGUITextureManager();
-	//delete (DirectXTextureManager*) drummerBoyGame->getGraphics()->getWorldTextureManager();
-	delete (XactSound*)drummerBoyGame->getSound();
+	delete (DirectXSound*)drummerBoyGame->getSound();
 	delete (DrummerBoyTextGenerator*)drummerBoyGame->getText()->getTextGenerator();
-	delete drummerBoyDataLoader;
 	delete drummerBoyButtonHandler;
 	delete drummerBoyKeyHandler;
+	delete drummerBoyDataLoader;
 	delete drummerBoyGame;
 
 	// AND RETURN

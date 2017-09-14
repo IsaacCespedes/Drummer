@@ -39,19 +39,15 @@ private:
 
 	// THE VIEWPORT IS THE WINDOW ONTO THE GAME THAT WE LOOK THROUGH
 	Viewport			viewport;
-	Viewport			modelViewport;
 
 	bool	mouseOverViewport;
-	bool	mouseOverModelViewport;
 
 public:
 	// INLINED ACCESSOR METHODS
 	Cursor*		getCursor()						{ return customCursor;				}
 	ScreenGUI*	getScreen(GameState gameState)	{ return screens.at(gameState);	}
 	Viewport*	getViewport()					{ return &viewport;					}
-	Viewport*	getModelViewport()				{ return &modelViewport;			}
 	bool isMouseOverViewport()					{ return mouseOverViewport;         }
-	bool isMouseOverModelViewport()					{ return mouseOverModelViewport;}
 
 	// INLINED MUTATOR METHOD
 	void setCursor(Cursor *initCursor)
@@ -66,7 +62,6 @@ public:
 	void addScreenGUI(GameState gameState, ScreenGUI *screenToAdd);
 	bool checkCurrentScreenForAction(Game *game);
 	void registerButtonEventHandler(ButtonEventHandler *eventHandler);
-	void updateGUIState(Game *game, long mouseX, long mouseY, GameState gameState);
+	void updateGUIState(long mouseX, long mouseY, GameState gameState);
 	void updateViewportState(long mouseX, long mouseY);
-	void updateModelViewportState(long mouseX, long mouseY);
 };

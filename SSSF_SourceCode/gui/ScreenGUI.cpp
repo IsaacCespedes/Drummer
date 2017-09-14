@@ -21,8 +21,10 @@
 */
 ScreenGUI::ScreenGUI()
 {
-	buttons = new list<Button*>();
-	overlayImages = new list<OverlayImage*>();
+	//buttons = new list<Button*>();
+	//overlayImages = new list<OverlayImage*>();
+	buttons = new map<const wstring, Button*>();
+	overlayImages = new map <const int, OverlayImage*>();
 	screenName = NULL;
 }
 
@@ -33,40 +35,33 @@ ScreenGUI::ScreenGUI()
 */
 ScreenGUI::~ScreenGUI()
 {
-	/*list<Button*>::iterator buttonIterator = buttons->begin();
-	Button *buttonToErase;
+	map<const wstring, Button*>::iterator bIterator = buttons->begin();
 
-	while(buttonIterator != buttons->end())
-	{
-		buttonToErase = *buttonIterator;
-		buttonIterator++;
-		buttons->remove(buttonToErase);
-	}*/
+	map<const wstring, Button*>::iterator bItToErase;
 
-	while(!buttons->empty())
+	while(bIterator != buttons->end())
 	{
-		delete buttons->front();
-		buttons->pop_front();
+		Button *b = (*bIterator).second;
+		bItToErase = bIterator;
+		bIterator++;
+		buttons->erase(bItToErase);
+		delete b;
 	}
 	buttons->clear();
 
-	/*list<OverlayImage*>::iterator imageIterator = overlayImages->begin();
-	OverlayImage *imageToErase;
+	map<const int, OverlayImage*>::iterator oIterator = overlayImages->begin();
 
-	while(imageIterator != overlayImages->end())
-	{
-		imageToErase = *imageIterator;
-		imageIterator++;
-		overlayImages->remove(imageToErase);
-	}*/
+	map<const int, OverlayImage*>::iterator oItToErase;
 
-	while(!overlayImages->empty())
+	while(oIterator != overlayImages->end())
 	{
-		delete overlayImages->front();
-		overlayImages->pop_front();
+		OverlayImage *oi = (*oIterator).second;
+		oItToErase = oIterator;
+		oIterator++;
+		overlayImages->erase(oItToErase);
+		delete oi;
 	}
 	overlayImages->clear();
-
 
 	delete buttons;
 	delete overlayImages;
@@ -76,18 +71,18 @@ ScreenGUI::~ScreenGUI()
 /*
 	addButton - This method adds a contructed Button to this GUI screen.
 */
-void ScreenGUI::addButton(Button *buttonToAdd)
+void ScreenGUI::addButton(Button *buttonToAdd, wstring cmd)
 {
-	buttons->push_back(buttonToAdd);
+	(*buttons)[cmd] = buttonToAdd;
 }
 
 /*
 	addOverlayImage - This method adds a constructured OverlayImage
 	to this GUI screen.
 */
-void ScreenGUI::addOverlayImage(OverlayImage *imageToAdd)
+void ScreenGUI::addOverlayImage(OverlayImage *imageToAdd, int id)
 {
-	overlayImages->push_back(imageToAdd);
+	(*overlayImages)[id] = imageToAdd;
 }
 
 /*
@@ -100,13 +95,13 @@ void ScreenGUI::addRenderItemsToRenderList(RenderList *renderList)
 {
 	// FIRST ADD THE OVERLAY IMAGES TO THE RENDER LIST
 	// FOR THIS WE'LL USE AN ITERATOR
-	list<OverlayImage*>::iterator imageIterator;
+	map<const int, OverlayImage*>::iterator imageIterator;
 	imageIterator = overlayImages->begin();
 	while (imageIterator != overlayImages->end())
 	{
 		// GET THE OverlayImage WE WANT TO ADD
 		// FROM THE ITERATOR
-		OverlayImage *image = (*imageIterator);
+		OverlayImage *image = (*imageIterator).second;
 
 		// ADD IT TO THE LIST
 		renderList->addRenderItem(	image->imageID,
@@ -121,36 +116,24 @@ void ScreenGUI::addRenderItemsToRenderList(RenderList *renderList)
 		imageIterator++;
 	}
 
-	
-/*	renderList->addRenderItem(	scrollMarkImage->imageID,
-									scrollMarkImage->x,
-									scrollMarkImage->y,
-									scrollMarkImage->z,
-									scrollMarkImage->alpha,
-									scrollMarkImage->width,
-									scrollMarkImage->height	);*/
-
 	// NOW ADD THE BUTTONS TO THE RENDER LIST
 	int imageId;
 
 	// WE'LL NEED A NEW ITERATOR
-	list<Button*>::iterator buttonIterator;
+	map<const wstring, Button*>::iterator buttonIterator;
 	buttonIterator = buttons->begin();
-	list<Button*>::iterator end = buttons->end();
+	map<const wstring, Button*>::iterator end = buttons->end();
 	while(buttonIterator != end)
 	{
 		// GET THE Button WE WANT TO ADD
 		// FROM THE ITERATOR
-		Button *buttonToRender = (*buttonIterator);
+		Button *buttonToRender = (*buttonIterator).second;
 
 		// DETERMINE WHICH Button IMAGE TO USE
 		if (buttonToRender->isMouseOver())
 			imageId = buttonToRender->getMouseOverTextureID();
 		else
 			imageId = buttonToRender->getNormalTextureID();
-
-		if(buttonToRender->isDeactivated())
-			imageId = buttonToRender->getDeactivatedTextureID();
 
 		// ADD IT TO THE LIST
 		renderList->addRenderItem(	imageId,
@@ -178,7 +161,7 @@ bool ScreenGUI::fireButtonCommand(Game *game)
 {
 	bool found = false;
 	Button *buttonToTest = NULL;
-	list<Button*>::iterator buttonIterator;
+	map<const wstring, Button*>::iterator buttonIterator;
 
 	// IF THERE ARE NO Buttons, LET'S AVOID A NULL POINTER EXCEPTION
 	if (buttons != NULL)
@@ -190,7 +173,7 @@ bool ScreenGUI::fireButtonCommand(Game *game)
 		while (!found && (buttonIterator != buttons->end()))
 		{
 			// GET THE CURRENT BUTTON FROM THE ITERATOR
-			buttonToTest = (*buttonIterator);
+			buttonToTest = (*buttonIterator).second;
 
 			// IF THE CURSOR IS OVER THE BUTTON, WE'VE FOUND THE BUTTON THAT WAS CLICKED
 			if (buttonToTest->isMouseOver())
@@ -226,7 +209,7 @@ bool ScreenGUI::fireButtonCommand(Game *game)
 */
 void ScreenGUI::registerButtonEventHandler(ButtonEventHandler *eventHandler)
 {
-	list<Button*>::iterator buttonIterator;
+	map<const wstring, Button*>::iterator buttonIterator;
 
 	// WE WANT TO AVOID A NULL POINTER EXCEPTION SHOULD
 	// THERE BE NO BUTTONS IN THIS GUI SCREEN
@@ -239,7 +222,7 @@ void ScreenGUI::registerButtonEventHandler(ButtonEventHandler *eventHandler)
 		while (buttonIterator != buttons->end())
 		{
 			// GET THE CURRENT BUTTON FROM THE ITERATOR
-			buttonToSet = (*buttonIterator);
+			buttonToSet = (*buttonIterator).second;
 
 			// LET THE BUTTON HAVE THE EVENT HANDLER
 			buttonToSet->setEventHandler(eventHandler);
@@ -264,10 +247,9 @@ void ScreenGUI::registerButtonEventHandler(ButtonEventHandler *eventHandler)
 	visible ScreenGUI such that the buttons are rendered properly
 	and so that button clicks fire events.
 */
-void ScreenGUI::updateAllButtons(Game *game, long mouseX, long mouseY)
+void ScreenGUI::updateAllButtons(long mouseX, long mouseY)
 {
-	GameStateManager * gsm = game->getGSM();
-	list<Button*>::iterator buttonIterator;
+	map<const wstring, Button*>::iterator buttonIterator;
 
 	// WE DON'T WANT NULL POINTER EXCEPTIONS, THERE
 	// MIGHT NOT BE ANY BUTTONS
@@ -275,45 +257,19 @@ void ScreenGUI::updateAllButtons(Game *game, long mouseX, long mouseY)
 	{
 		// START THE ITERATOR
 		buttonIterator = buttons->begin();
-
+		Button *buttonToUpdate;
 		while (buttonIterator != buttons->end())
 		{
+			// GET THE CURRENT BUTTON FROM THE ITERATOR
+			buttonToUpdate = (*buttonIterator).second;
+
 			// UPDATE ALL BUTTONS IN THIS SCREEN SO THEY
 			// KNOW IF THE CURSOR IS CURRENTLY OVER THEM
 			// OR NOT
-			(*buttonIterator)->updateMouseOver(mouseX, mouseY);
+			buttonToUpdate->updateMouseOver(mouseX, mouseY);
 
 			// ADVANCE THE ITERATOR
 			buttonIterator++;
 		}
-
-		Viewport * v = game->getGUI()->getViewport();
-		buttonIterator = buttons->begin();
-		buttonIterator++;
-		(*buttonIterator)->setDeactivated(v->getViewportX() == 0);
-		if((*buttonIterator)->isDeactivated())
-		{
-			gsm->setLeftScroll(false);
-			(*buttonIterator)->setCommand(L"none");
-		}
-		else
-		{
-			gsm->setLeftScroll(true);
-			(*buttonIterator)->setCommand(L"Scroll Left");
-		}
-		buttonIterator++;
-		(*buttonIterator)->setDeactivated(v->getViewportX() + v->getViewportWidth() >= game->getGSM()->getWorld()->getWorldWidth() - 1);
-		if((*buttonIterator)->isDeactivated())
-		{
-			(*buttonIterator)->setCommand(L"none");
-			gsm->setRightScroll(false);
-		}
-		else
-		{
-			(*buttonIterator)->setCommand(L"Scroll Right");
-			gsm->setRightScroll(true);
-		}
-
-
 	}
 }

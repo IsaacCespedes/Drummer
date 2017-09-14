@@ -61,8 +61,6 @@ public:
 	int getZ()					{ return z;				}
 
 	// INLINED MUTATOR METHOD
-	void setColumns(int c)	{columns = c;}
-	void setLayerWidth(int lw) {layerWidth = lw;}
 	void setZ(int initZ)		{ z = initZ;			}
 
 	// METHODS DEFINED IN TiledLayer.cpp

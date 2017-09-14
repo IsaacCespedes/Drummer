@@ -18,4 +18,5 @@ public:
 	int  getLocation(){return (x * 7) + y;}
 	int  getRow(){return x;}
 	void setLocation(int i, int j);
+	void think(Game *game){}
 };

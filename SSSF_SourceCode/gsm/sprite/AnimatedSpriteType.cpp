@@ -26,13 +26,14 @@ AnimatedSpriteType::AnimatedSpriteType()
 */
 AnimatedSpriteType::~AnimatedSpriteType() 
 {
-	map<wstring, vector<unsigned int>*>::iterator stIterator = animationSequences.begin();
+	map<wstring, vector<unsigned int>*>::iterator iter =  animationSequences.begin();
 
-	while(stIterator != animationSequences.end())
+	while(iter != animationSequences.end())
 	{
-		delete (*stIterator).second;
-		stIterator++;
+		delete (*iter).second;
+		iter++;
 	}
+	animationSequences.clear();
 }
 
 /*

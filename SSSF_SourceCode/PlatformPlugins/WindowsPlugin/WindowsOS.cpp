@@ -106,7 +106,7 @@ WindowsOS::WindowsOS(	HINSTANCE hInstance,
     windowHandle = CreateWindowEx(NULL,
 		L"GameWindowClass",		// OUR WINDOW CLASS TYPE
 		applicationName.c_str(),// WINDOW TITLE
-		WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU,				// FULLSCREEN or WINDOWED?
+		initStyle,				// FULLSCREEN or WINDOWED?
 		0, 0,					// WINDOW LOCATION
 		screenWidth,	// WINDOW WIDTH
 		screenHeight,	// WINDOW HEIGHT

@@ -19,7 +19,7 @@
 */
 DirectXTextureManager::DirectXTextureManager()
 {
-
+//	textures = new map<wstring, LPDIRECT3DTEXTURE9>();
 }
 
 /*
@@ -27,6 +27,7 @@ DirectXTextureManager::DirectXTextureManager()
 */
 DirectXTextureManager::~DirectXTextureManager()
 {
+	clear();
 }
 
 /*
@@ -71,7 +72,7 @@ unsigned int DirectXTextureManager::loadTexture(wstring key)
 
 		// CREATE A NEW TEXTURE
 		result = D3DXCreateTextureFromFileEx(
-			graphicsDevice ,		// GPU
+			graphicsDevice,		// GPU
 			fileName,			// BITMAP FILE PATH/NAME
 			info.Width,			// BITMAP IMAGE WIDTH
 			info.Height,		// BITMAP IMAGE HEIGHT
@@ -91,6 +92,7 @@ unsigned int DirectXTextureManager::loadTexture(wstring key)
 
 		// NOW PUT THE KEY IN THE wchar_t TABLE
 		int indexOfTexture = wstringTable.putWStringInTable(fileName);
+
 		// AND RETURN THE TEXTURE'S ID
 		return indexOfTexture;
 	}
@@ -124,9 +126,7 @@ void DirectXTextureManager::reloadAllTextures()
 */
 void DirectXTextureManager::clear()
 {
-	
 	map<wstring, LPDIRECT3DTEXTURE9>::iterator it;
-	//map<wstring, LPDIRECT3DTEXTURE9>::iterator itToErase;
 
 	for(it = textures.begin(); it != textures.end(); ++it)
 	{
@@ -135,19 +135,6 @@ void DirectXTextureManager::clear()
 		delete (*it).second;
 
 	}
-
-	/*it = textures.begin();
-	while (it != textures.end())
-	{
-		wstring keyToDelete = (*it).first;
-		LPDIRECT3DTEXTURE9 textureToDelete = (*it).second;
-		itToErase = it;
-		it++;
-		textureToDelete->Release();
-		textureToDelete = NULL;
-		delete textureToDelete;
-		textures.erase(itToErase);
-	}*/
 	
 	textures.clear();
 	wstringTable.clear();

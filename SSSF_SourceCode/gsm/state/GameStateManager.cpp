@@ -18,7 +18,6 @@
 #include "SSSF_SourceCode\gsm\state\GameStateManager.h"
 #include "SSSF_SourceCode\gsm\sprite\SpriteManager.h"
 
-
 /*
 	GameStateManager - Default Constructor, it starts the app at the
 	splash screen with no level loaded.
@@ -30,8 +29,6 @@ GameStateManager::GameStateManager()
 	currentLevel = NO_LEVEL_LOADED;
 	noteLength = 10;
 	trackPlaying = false;
-	leftScroll = false;
-	rightScroll = false;
 }
 
 /*
@@ -41,6 +38,11 @@ GameStateManager::GameStateManager()
 GameStateManager::~GameStateManager()	
 {
 	delete spriteManager;
+}
+
+void GameStateManager::beginTrack()
+{
+	trackPlaying = true;
 }
 
 /*
@@ -54,13 +56,8 @@ void GameStateManager::addGameRenderItemsToRenderList(Game *game)
 
 	// THEN THE SPRITE MANAGER
 	spriteManager->addSpriteItemsToRenderList(game);
-	model.addVerticesToVertexList(game->getGraphics()->getVertexList(), game->getGUI()->getModelViewport());
 }
 
-void GameStateManager::beginTrack()
-{
-	trackPlaying = true;
-}
 
 /*
 	goToGame - This method transitions the game application from the levl loading
@@ -195,15 +192,25 @@ void GameStateManager::loadLevel(Game *game, wstring levelName)
 
 void GameStateManager::playTrack(Game * game)
 {
+	if(noteLength == 5)
+	{
+		int left = -1;
+		int right = -1;
+
+		spriteManager->animateNote(game, left, right);
+		game->getGraphics()->animate(left, right);
+	}
+
 	if(noteLength == 0)
 	{
-		if(!getSpriteManager()->playNotes(game))
+		if(!spriteManager->playNotes(game))
 			trackPlaying = false;
 		noteLength = 10;
 	}
-	else
-		noteLength--;
+	
+	noteLength--;
 }
+
 /*
 	shutdown - this method is called when the user wants to quit the
 	application. This method updates the game state such that all
@@ -247,7 +254,6 @@ void GameStateManager::update(Game *game)
 	if(trackPlaying)
 		playTrack(game);
 	spriteManager->update(game);
-
 	//world.update(game);
 	//physics.update(game);
 }

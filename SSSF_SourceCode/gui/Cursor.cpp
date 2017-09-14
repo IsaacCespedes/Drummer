@@ -50,7 +50,6 @@ Cursor::~Cursor()
 */
 void Cursor::addRenderItemToRenderList(RenderList *renderList)
 {
-	if(0<x && (x+16)<1024 && 0<y && (y+16)<768)
 	renderList->addRenderItem(	activeCursorID,
 								x,
 								y,

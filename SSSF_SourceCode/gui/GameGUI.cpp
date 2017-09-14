@@ -31,7 +31,6 @@
 GameGUI::GameGUI()
 {
 	customCursor = NULL;
-	mouseOverViewport = false;
 }
 
 /*
@@ -41,8 +40,8 @@ GameGUI::GameGUI()
 */
 GameGUI::~GameGUI()
 {
-	// TODO - GO THROUGH SCREENS AND DELETE ALL CONTENTS
 	delete customCursor;
+
 	map<GameState, ScreenGUI*>::iterator sgIterator = screens.begin();
 
 	map<GameState, ScreenGUI*>::iterator sgItToErase;
@@ -145,22 +144,20 @@ void GameGUI::registerButtonEventHandler(ButtonEventHandler *eventHandler)
 	If an illegal mode is provided, meaning a screen index that does not
 	exist, an exception is thrown.
 */
-void GameGUI::updateGUIState(Game *game, long mouseX, long mouseY, GameState gameState)
+void GameGUI::updateGUIState(long mouseX, long mouseY, GameState gameState)
 {
 	ScreenGUI *gui = screens[gameState];
 	if (gui != NULL)
 	{
 		// LET THE CURRENT SCREEN UPDATE IT'S BUTTON STATES
-		gui->updateAllButtons(game, mouseX, mouseY);
+		gui->updateAllButtons(mouseX, mouseY);
 	}
 }
 
 void GameGUI::updateViewportState(long mouseX, long mouseY)
 {
-	mouseOverViewport = viewport.areViewportCoordinatesInViewport(mouseX, mouseY, 0, 0);
-}
-
-void GameGUI::updateModelViewportState(long mouseX, long mouseY)
-{
-	mouseOverViewport = viewport.areViewportCoordinatesInViewport(mouseX, mouseY, 0, 0);
+	if (viewport.areViewportCoordinatesInViewport(mouseX, mouseY, 0, 0))
+		mouseOverViewport = true;
+	else
+		mouseOverViewport = false;
 }

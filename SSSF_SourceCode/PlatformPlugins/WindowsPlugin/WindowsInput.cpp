@@ -15,6 +15,7 @@
 #include "SSSF_SourceCode\gsm\state\GameState.h"
 #include "SSSF_SourceCode\gsm\state\GameStateManager.h"
 #include "SSSF_SourceCode\gui\GameGUI.h"
+#include "SSSF_SourceCode\gui\Viewport.h"
 #include "SSSF_SourceCode\gui\ScreenGUI.h"
 #include "SSSF_SourceCode\input\GameInput.h"
 #include "SSSF_SourceCode\input\KeyEventHandler.h"
@@ -50,8 +51,9 @@ void WindowsInput::processInput(Game *game)
 	WindowsOS *os = (WindowsOS*)game->getOS();
 	WINDOWINFO wi = os->getWindowInfo();
 	updateCursorPosition(game, wi, game->getGUI()->getCursor());
+	updateViewportOffsets(wi, game);
 	updateInputState();
-	//respondToKeyboardInput(game);
+	respondToKeyboardInput(game);
 	respondToMouseInput(game);
 }
 
@@ -68,21 +70,20 @@ void WindowsInput::respondToMouseInput(Game *game)
 	GameStateManager *gsm = game->getGSM();
 	Viewport * viewport = gui->getViewport();
 
-	gui->updateGUIState(game, mousePoint->x, mousePoint->y, gsm->getCurrentGameState());
-
+	gui->updateGUIState(mousePoint->x, mousePoint->y, gsm->getCurrentGameState());
+	
 	if(gsm->isGameInProgress())
 	{
 		gui->updateViewportState(mousePoint->x, mousePoint->y);
-		gui->updateModelViewportState(mousePoint->x, mousePoint->y);
 	}
-	
+
 	if ( (GetAsyncKeyState(VK_LBUTTON) & 0X8000)
-		&& ((inputState[VK_LBUTTON].isFirstPress)||(inputState[VK_LBUTTON].isPressed)))
+		&& (inputState[VK_LBUTTON].isFirstPress))
 	{
 		if(gui->isMouseOverViewport() && inputState[VK_LBUTTON].isFirstPress)
 			gsm->getSpriteManager()->editNote(viewport->getViewportX() + mousePoint->x - viewport->getViewportOffsetX(), gui->getViewport()->getViewportY() + mousePoint->y - viewport->getViewportOffsetY());
-		else
-			gui->checkCurrentScreenForAction(game);
+
+		gui->checkCurrentScreenForAction(game);
 	}
 }
 
@@ -97,28 +98,11 @@ void WindowsInput::updateCursorPosition(Game *game, WINDOWINFO wi, Cursor *curso
 	GetCursorPos(mousePoint);
 	GameGraphics *graphics = game->getGraphics();
 
-	// Fix the mouse location
-	mousePoint->x = mousePoint->x - wi.rcWindow.left - wi.rcClient.left;
-	mousePoint->y = mousePoint->y - wi.rcWindow.top - wi.rcClient.top;
-	if (mousePoint->x < 0)
-	{
-		mousePoint->x = 0;
-	}
-	if (mousePoint->x >= graphics->getScreenWidth())
-	{
-		mousePoint->x = graphics->getScreenWidth() - 1;
-	}
-	if (mousePoint->y < 0)
-	{
-		mousePoint->y = 0;
-	}
-	if (mousePoint->y >= graphics->getScreenHeight())
-	{
-		mousePoint->y = graphics->getScreenHeight() - 1;
-	}
+	LONG cursorX = mousePoint->x;
+	LONG cursorY = mousePoint->y;
 
-	cursor->setX(mousePoint->x);
-	cursor->setY(mousePoint->y);
+	cursor->setX(cursorX);
+	cursor->setY(cursorY);
 }
 
 /*
@@ -159,6 +143,11 @@ void WindowsInput::updateInputState()
 	}
 }
 
+void WindowsInput::updateViewportOffsets(WINDOWINFO wi, Game * game)
+{
+	Viewport * v = game->getGUI()->getViewport();
+	//v->setViewportOffsetX(v->getViewportOffsetY() + 
+}
 /*
 	shutdown - we are simply using Windows for getting input, but, if we were using
 	another library, like DirectInput for getting game controller data, we may have

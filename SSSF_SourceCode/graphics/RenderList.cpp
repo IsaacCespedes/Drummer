@@ -28,7 +28,7 @@ RenderList::RenderList(int initMaxItems)
 */
 RenderList::~RenderList()
 {
-	delete [] renderList;
+	delete renderList;
 }
 
 /*

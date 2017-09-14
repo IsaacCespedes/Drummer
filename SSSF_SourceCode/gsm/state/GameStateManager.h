@@ -23,7 +23,6 @@
 #include "SSSF_SourceCode\gsm\state\GameState.h"
 #include "SSSF_SourceCode\gsm\physics\Physics.h"
 #include "SSSF_SourceCode\gsm\sprite\SpriteManager.h"
-#include "SSSF_SourceCode\gsm\world\Model.h"
 #include "SSSF_SourceCode\gsm\world\World.h"
 #include "SSSF_SourceCode\gsm\world\WorldLayer.h"
 
@@ -33,20 +32,14 @@ static const int NO_LEVEL_LOADED = 0;
 
 class GameStateManager
 {
-		
 private:
 	// THE CURRENT GAME STATE
 	GameState currentGameState;
-
-	bool trackPlaying;
-	bool leftScroll;
-	bool rightScroll;
 
 	// THE CURRENT LEVEL IS THE ONE CURRENTLY BEING PLAYED. NOTE THAT IF
 	// THE CURRENT LEVEL IS 0, THEN IT MEANS THERE IS NO ACTIVE LEVEL LOADED,
 	// LIKE WHEN WE'RE AT THE MAIN MENU
 	unsigned int currentLevel;
-	unsigned int noteLength;
 
 	// THESE VECTORS STORE THE NAMES OF EACH LEVEL AND THE RELATIVE
 	// PATH AND FILE NAME OF EACH DATA INPUT FILE FOR ALL GAME LEVELS. 
@@ -62,15 +55,15 @@ private:
 	// AND DO NOT MOVE
 	World world;
 
-	//for vertices and anything else pertaining to 3d model
-	Model model;
-
 	// FOR MANAGING DYNAMIC GAME OBJECTS FOR CURRENT LEVEL
 	// NOTE THAT WE CALL THE DYNAMIC OBJECTS "SPRITES"
 	SpriteManager *spriteManager;
 
 	// FOR DOING ALL COLLISION DETECTION AND RESOLUTION
 	//Physics			physics;
+
+	bool trackPlaying;
+	unsigned int noteLength;
 
 public:
 	// INLINED ACCESSOR METHODS
@@ -79,7 +72,6 @@ public:
 	unsigned int	getNumLevels()			{ return levelNames.size();			}
 	//Physics*		getPhysics()			{ return &physics;					}
 	SpriteManager*	getSpriteManager()		{ return spriteManager;				}
-	Model*			getModel()				{ return &model;					}
 	World*			getWorld()				{ return &world;					}
 	wstring			getCurrentLevelName()	{ return levelNames[currentLevel];	}
 
@@ -89,8 +81,6 @@ public:
 	bool			isGameInProgress();
 	bool			isGameLevelLoading();
 	bool			isWorldRenderable();
-	bool			isLeftScroll(){return leftScroll;}
-	bool			isRightScroll(){return rightScroll;}
 
 	// METHODS FOR TRANSITIONING TO OTHER GAME STATES
 	void			goToGame();
@@ -102,14 +92,12 @@ public:
 	~GameStateManager();
 	void			addGameRenderItemsToRenderList(Game *game);
 	void			addLevel(wstring levelToAddName, wstring levelToAddFileNameAndPath);
+	void			beginTrack();
 	unsigned int	getLevelNum(wstring levelName);
 	void			shutdown();
 	void			loadLevel(Game *game, unsigned int levelNum);
 	void			loadLevel(Game *game, wstring levelName);
 	void			playTrack(Game * game);
-	void			beginTrack();
-	void			setLeftScroll(bool b){leftScroll = b;}
-	void			setRightScroll(bool b){rightScroll = b;}
 	void			unloadCurrentLevel();
 	void			update(Game *game);
 };

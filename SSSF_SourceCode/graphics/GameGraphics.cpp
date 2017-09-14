@@ -19,7 +19,6 @@
 #include "SSSF_SourceCode\os\GameOS.h"
 #include "SSSF_SourceCode\text\GameText.h"
 #include "SSSF_SourceCode\text\TextFileWriter.h"
-#include "SSSF_SourceCode\PlatformPlugins\DirectXPlugin\DirectXTextureManager.h"
 
 /*
 	GameGraphics - Default constructor, nothing to initialize.
@@ -35,9 +34,15 @@ GameGraphics::GameGraphics()
 GameGraphics::~GameGraphics()
 {
 	delete guiRenderList;
+	//delete guiTextureManager;
 	delete worldRenderList;
+	//delete worldTextureManager;
 }
-
+void GameGraphics::clearGUITextures()
+{
+	guiTextureManager->clear();
+	guiRenderList->clear();
+}
 /*
 	clearWorldTextures - When the game leaves a level we have to clear
 	out these data structures. Calling clear on these will delete
@@ -46,11 +51,8 @@ GameGraphics::~GameGraphics()
 void GameGraphics::clearWorldTextures()
 {	
 	// CLEAR LEVEL DATA STRUCURES
-	//worldTextureManager->clear();
-	//guiTextureManager->clear();
+	worldTextureManager->clear();
 	worldRenderList->clear();
-	guiRenderList->clear();
-	//modelVertexList->clear();
 }
 
 /*
@@ -84,8 +86,6 @@ void GameGraphics::init(int initScreenWidth, int initScreenHeight)
 	// LEVEL TEXTURES (like sprites, tiles, particles, etc.)
 	worldRenderList = new RenderList(1000);
 	worldTextureManager = createTextureManager();
-
-//	modelVertexList = new VertexList(1000);
 }
 
 /*
@@ -99,7 +99,7 @@ void GameGraphics::renderText(GameText *text)
 	int numTextObjects = text->getNumTextObjectsToDraw();
 	for (int i = 0; i < numTextObjects; i++)
 	{
-		TextToDraw *textToDraw = text->getTextToDrawAtIndex(i);
+		TextToDraw textToDraw = text->getTextToDrawAtIndex(i);
 		renderTextToDraw(textToDraw);
 	}
 }

@@ -38,7 +38,7 @@ const unsigned int RIGHT_KEY = VK_RIGHT;
 const unsigned int C_KEY = (unsigned int)'C';
 
 const float PLAYER_SPEED = 5.0f;
-const int MIN_FPS = 1;
+const int MIN_FPS = 5;
 const int MAX_FPS = 100;
 const int FPS_INC = 1;
 
@@ -52,6 +52,64 @@ void DrummerBoyKeyEventHandler::handleKeyEvents(Game *game)
 {
 	// WE CAN QUERY INPUT TO SEE WHAT WAS PRESSED
 	GameInput *input = game->getInput();
+
+	// LET'S GET THE PLAYER'S PHYSICAL PROPERTIES, IN CASE WE WANT TO CHANGE THEM
+	GameStateManager *gsm = game->getGSM();
+//	AnimatedSprite *player = gsm->getSpriteManager()->getPlayer();
+//	PhysicalProperties *pp = player->getPhysicalProperties();
+	
+	// IF THE GAME IS IN PROGRESS
+	if (gsm->isGameInProgress())
+	{
+		// CHECK FOR WASD KEYS FOR MOVEMENT
+		int incX = 0;
+		int incY = 0;
+		bool moveViewport = false;
+
+		// WASD AND DIRECTION KEY PRESSES WILL CONTROL THE PLAYER,
+		// SO WE'LL UPDATE THE PLAYER VELOCITY WHEN THESE KEYS ARE
+		// PRESSED, THAT WAY PHYSICS CAN CORRECT AS NEEDED
+//		float vX = pp->getVelocityX();
+//		float vY = pp->getVelocityY();
+
+		if (input->isKeyDown(W_KEY))
+		{
+	//		vY = -PLAYER_SPEED;
+		}
+		if (input->isKeyDown(A_KEY))
+		{
+		//	vX = -PLAYER_SPEED;
+		}
+		if (input->isKeyDown(S_KEY))
+		{
+		//	vY = PLAYER_SPEED;
+		}
+		if (input->isKeyDown(D_KEY))
+		{
+		//	vX = PLAYER_SPEED;
+		}
+		
+		// NOW SET THE ACTUAL VELOCITY
+//		Physics *physics = gsm->getPhysics();
+//		pp->setVelocitySafely(physics, vX, vY);
+
+		// NOTE THAT THE VIEWPORT SHOULD FOLLOW THE PLAYER, AND SO SHOULD BE CORRECTED AFTER PHYSICS
+		// ARE APPLIED. I HAVE PROVIDED A SIMPLE WAY OF DOING SO, WHICH SHOULD BE IMPROVED, DEPENDING
+		// ON THE GAME'S NEED
+	}
+
+	// 0X43 is HEX FOR THE 'C' VIRTUAL KEY
+	// THIS CHANGES THE CURSOR IMAGE
+	if ((input->isKeyDownForFirstTime(C_KEY))
+		&& input->isKeyDown(VK_SHIFT))
+	{
+		Cursor *cursor = game->getGUI()->getCursor();
+		unsigned int id = cursor->getActiveCursorID();
+		id++;
+		if (id == cursor->getNumCursorIDs())
+			id = 0;		
+		cursor->setActiveCursorID(id);
+	}
 
 	// LET'S MESS WITH THE TARGET FRAME RATE IF THE USER PRESSES THE HOME OR END KEYS
 	WindowsTimer *timer = (WindowsTimer*)game->getTimer();

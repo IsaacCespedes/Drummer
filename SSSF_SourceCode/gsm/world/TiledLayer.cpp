@@ -51,14 +51,6 @@ TiledLayer::~TiledLayer()
 	for(int i = 0; i < tileLayout->size(); ++i) {
 		delete tileLayout->at(i);
 	}
-	/*vector<Tile*>::iterator it = tileLayout->begin();
-	Tile* prevTile = *(it);
-	while (it != tileLayout->end())
-	{
-		it++;
-		delete prevTile;
-		prevTile = *(it);
-	}*/
 	tileLayout->clear();
 	delete tileLayout;
 }
@@ -158,7 +150,7 @@ void TiledLayer::addTile(Tile *initTile)
 */
 int TiledLayer::calculateAndSetLayerWidth()
 {
-	layerWidth = columns * tileWidth;
+	layerWidth = rows * tileWidth;
 	return layerWidth;
 }
 
@@ -171,7 +163,7 @@ int TiledLayer::calculateAndSetLayerWidth()
 */
 int TiledLayer::calculateAndSetLayerHeight()
 { 
-	layerHeight = rows * tileHeight;
+	layerHeight = columns * tileHeight;
 	return layerHeight;
 }
 

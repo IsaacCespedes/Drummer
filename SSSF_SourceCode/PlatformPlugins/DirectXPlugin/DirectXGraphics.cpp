@@ -35,22 +35,20 @@ DirectXGraphics::DirectXGraphics(Game *initGame)
 DirectXGraphics::~DirectXGraphics()
 {
 	displayOptions->clear();
+	delete drummer;
 	delete displayOptions;
-	delete indexBuffer;
-	delete modelVertexBuffer;
 	delete (DirectXTextureManager*)worldTextureManager;
 	delete (DirectXTextureManager*)guiTextureManager;
-	delete textFont;
-	delete spriteHandler;
-	delete graphicsDevice;
 	delete d3d;
-	//delete worldVertexBuffer;
-	//delete guiVertexBuffer;
-	//delete (DirectXTextureManager*) guiTextureManager;
-	//delete (DirectXTextureManager*) worldTextureManager;
+	delete graphicsDevice;
+	delete spriteHandler;
+	delete textFont;
 }
 
-
+void DirectXGraphics::animate(int l, int r)
+{
+	drummer->SelectAnimation(l, r);
+}
 /*
 	containsDisplayMode - This method looks at the vector of display modes that
 	were presumably retrieved from the GPU, and tests to see if our desired
@@ -122,33 +120,7 @@ HRESULT DirectXGraphics::createDirectXDeviceAndSpriteHandler()
 	else
 		text->writeDebugOutput("FAILED");
 
-    graphicsDevice->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn off the 3D lighting
-	graphicsDevice->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50)); // ambient light
-	graphicsDevice->SetRenderState(D3DRS_ZENABLE, TRUE); 
-
-	/*graphicsDevice->SetVertexShader(NULL);
-	graphicsDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-	//graphicsDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE); // both sides of the triangles
-	graphicsDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	graphicsDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	graphicsDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);*/
-
 	return result;
-}
-
-HRESULT DirectXGraphics::createVertexBuffers()
-{
-	 // Create the vertex buffer. Here we are allocating enough memory
-    // (from the default pool) to hold all our 3 custom vertices. We also
-    // specify the FVF, so the vertex buffer knows what data it contains.
-    if( FAILED( graphicsDevice->CreateVertexBuffer(24*sizeof(VertexItem),
-                                                  D3DUSAGE_WRITEONLY, D3DFVF_XYZ | D3DFVF_NORMAL,
-												  D3DPOOL_DEFAULT, &modelVertexBuffer, NULL ) ) )
-    {
-        return E_FAIL;
-    }
-
-	graphicsDevice->CreateIndexBuffer(36*sizeof(short),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&indexBuffer,NULL);
 }
 
 /*
@@ -177,91 +149,6 @@ void DirectXGraphics::endDirectXFrameRendering()
 	// PUT WHAT WE JUST RENDERED ONTO THE SCREEN
 	if (FAILED(graphicsDevice->Present(NULL, NULL, NULL, NULL)))
 		game->getText()->writeDebugOutput("\ngraphicsDevice->Present(): FAILED");
-}
-
-HRESULT DirectXGraphics::fillVertexBuffer()
-{
-
-	VertexItem cubevertices[] =
-    {
-        { -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, },    // side 1
-        { 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, },
-        { -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, },
-        { 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, },
-
-        { -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, },    // side 2
-        { -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, },
-        { 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, },
-        { 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, },
-
-        { -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, },    // side 3
-        { -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, },
-        { 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, },
-        { 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, },
-
-        { -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, },    // side 4
-        { 1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, },
-        { -1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, },
-        { 1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, },
-
-        { 1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, },    // side 5
-        { 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, },
-        { 1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, },
-        { 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, },
-
-        { -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, },    // side 6
-        { -1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, },
-        { -1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, },
-        { -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, },
-    };
-
-	// Now we fill the vertex buffer. To do this, we need to Lock() the VB to
-    // gain access to the vertices. This mechanism is required becuase vertex
-    // buffers may be in device memory.
-    VOID* pVertices;
-	VOID* pIndices;
-    if( FAILED( modelVertexBuffer->Lock( 0, 0, ( void** )&pVertices, 0 ) ) )
-	{
-        return E_FAIL;
-	}
-	memcpy( pVertices, cubevertices, sizeof(cubevertices));
-    modelVertexBuffer->Unlock();
-
-	short indices[] =
-    {
-        0, 1, 2,    // side 1
-        2, 1, 3,
-        4, 5, 6,    // side 2
-        6, 5, 7,
-        8, 9, 10,    // side 3
-        10, 9, 11,
-        12, 13, 14,    // side 4
-        14, 13, 15,
-        16, 17, 18,    // side 5
-        18, 17, 19,
-        20, 21, 22,    // side 6
-        22, 21, 23,
-    };
-
-	// lock i_buffer and load the indices into it 
-	indexBuffer->Lock(0, 0, (void**)&pIndices, 0); 
-	memcpy(pIndices, indices, sizeof(indices)); 
-	indexBuffer->Unlock();
-
-	 D3DLIGHT9 light; // create the light struct 
-	 D3DMATERIAL9 material; // create the material struct
-	 ZeroMemory(&light, sizeof(light)); // clear out the light struct for use 
-	 light.Type = D3DLIGHT_DIRECTIONAL; // make the light type 'directional light' 
-	 light.Diffuse = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f); // set the light's color 
-	 light.Direction = D3DXVECTOR3(-1.0f, -0.3f, -1.0f); 
-	 graphicsDevice->SetLight(0, &light); // send the light struct properties to light #0 
-	 graphicsDevice->LightEnable(0, TRUE); // turn on light #0 
-	 ZeroMemory(&material, sizeof(D3DMATERIAL9)); // clear out the struct for use 
-	 material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); // set diffuse color to white 
-	 material.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); // set ambient color to white 
-	 graphicsDevice->SetMaterial(&material); // set the globably-used material to &material
-
-	return S_OK;
 }
 
 /*
@@ -313,7 +200,7 @@ void DirectXGraphics::findAlternativeDisplayMode(	vector<D3DDISPLAYMODE> *displa
 	iterator = displayModes->begin();
 	while (iterator != displayModes->end())
 	{
-		D3DDISPLAYMODE testMode = (*iterator);
+		D3DDISPLAYMODE  testMode = (*iterator);
 		totalPixels = testMode.Width * testMode.Height;
 		if (totalPixels > maxPixels)
 		{
@@ -332,7 +219,6 @@ void DirectXGraphics::findAlternativeDisplayMode(	vector<D3DDISPLAYMODE> *displa
 */
 void DirectXGraphics::getDirectXDisplayModes()
 {
-
 	// WE'LL FILL THIS WITH THE DISPLAY MODES WE FIND
 	displayOptions = new vector<D3DDISPLAYMODE>();
 
@@ -349,9 +235,8 @@ void DirectXGraphics::getDirectXDisplayModes()
 										format);
 	
 		// GET ALL FOR THIS COLOR MODEL
-
-		//FIGURE OUT HOW TO CLEAR THIS
 		displayModes = new D3DDISPLAYMODE[numAdapters];
+
 		for (int i = 0; i < numAdapters; i++)
 		{
 			d3d->EnumAdapterModes(	D3DADAPTER_DEFAULT,
@@ -362,7 +247,6 @@ void DirectXGraphics::getDirectXDisplayModes()
 			// PUT THEM INTO OUR VECTOR
 			displayOptions->push_back(displayModes[i]);
 		}
-		
 		delete [] displayModes;
 		adapterCounter++;
 	}
@@ -443,7 +327,7 @@ void DirectXGraphics::initGraphics(	HWND hWnd, bool isFullscreen)
     presentParameters.Windowed = !isFullscreen;
 
 	// DISCARD OLD FRAMES
-	presentParameters.SwapEffect = D3DSWAPEFFECT_FLIP;
+	presentParameters.SwapEffect = D3DSWAPEFFECT_FLIP;// D3DSWAPEFFECT_DISCARD;
 
 	// THE WINDOW HANDLE
     presentParameters.hDeviceWindow = hWnd;
@@ -453,11 +337,43 @@ void DirectXGraphics::initGraphics(	HWND hWnd, bool isFullscreen)
     presentParameters.BackBufferWidth	= screenWidth;
     presentParameters.BackBufferHeight	= screenHeight;
 
-	presentParameters.EnableAutoDepthStencil = TRUE; 
-	presentParameters.AutoDepthStencilFormat = D3DFMT_D16;
+	presentParameters.EnableAutoDepthStencil = TRUE;    // automatically run the z-buffer for us
+    presentParameters.AutoDepthStencilFormat = D3DFMT_D16;    // 16-bit pixel format for the z-buffer
+
 
 	// OK, NOW WE CAN MAKE OUR GPU & SPRITE HANDLER.
 	createDirectXDeviceAndSpriteHandler();
+
+	drummer = new SkinnedMesh(graphicsDevice);
+	drummer->Load(L"mesh/drummer.x");
+
+	graphicsDevice->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn off the 3D lighting
+	graphicsDevice->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50)); // ambient light
+	graphicsDevice->SetRenderState(D3DRS_ZENABLE, TRUE); 
+
+	D3DLIGHT9 light; // create the light struct 
+	 D3DMATERIAL9 material; // create the material struct
+	 ZeroMemory(&light, sizeof(light)); // clear out the light struct for use 
+	 light.Type = D3DLIGHT_DIRECTIONAL; // make the light type 'directional light' 
+	 light.Diffuse = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f); // set the light's color 
+	 light.Direction = D3DXVECTOR3(-1.0f, -0.3f, -1.0f); 
+	 graphicsDevice->SetLight(0, &light); // send the light struct properties to light #0 
+	 graphicsDevice->LightEnable(0, TRUE); // turn on light #0 
+	 ZeroMemory(&material, sizeof(D3DMATERIAL9)); // clear out the struct for use 
+	 material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); // set diffuse color to white 
+	 material.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); // set ambient color to white 
+	 graphicsDevice->SetMaterial(&material); // set the globably-used material to &material
+
+	 D3DXLoadMeshFromX(  
+		L"mesh/drums.x",
+		D3DXMESH_MANAGED,
+		graphicsDevice,
+		0,
+		0,
+		0,
+		0,
+		&mesh);
+
 }
 
 /*
@@ -481,51 +397,6 @@ void DirectXGraphics::initTextFont(int fontSize)
 		DEFAULT_PITCH | FF_MODERN,	// FONT FAMILY NAME
 		TEXT(""),					// FONT FACE NAME
 		&textFont );				// THE FONT WE ARE CREATING
-}
-
-void DirectXGraphics::initVertices()
-{
-	createVertexBuffers();
-	fillVertexBuffer();
-}
-
-void DirectXGraphics::pipeline(Game * game)
-{
-	Model* model = game->getGSM()->getModel();
-	Vertex3D camera = model->getCamera();
-	Vertex3D focus = model->getFocus();
-	Vertex3D up = model->getUp();
-
-	D3DXMATRIX matView;    // the view transform matrix
-
-    D3DXMatrixLookAtLH(&matView,
-	&D3DXVECTOR3 (camera.x, camera.y, camera.z),    // the camera position
-                       &D3DXVECTOR3 (focus.x, focus.y, focus.z),    // the look-at position
-                       &D3DXVECTOR3 (up.x, up.y, up.z));    // the up direction
-
-	graphicsDevice->SetTransform(D3DTS_VIEW, &matView);    // set the view transform to matView
-
-	D3DXMATRIX matProjection;     // the projection transform matrix
-
-    D3DXMatrixPerspectiveFovLH(&matProjection,
-                               D3DXToRadian(45),    // the horizontal field of view
-                               (FLOAT)1024/ (FLOAT)768, // aspect ratio
-                               0.1f,    // the near view-plane
-                               100.0f);    // the far view-plane
-
-    graphicsDevice->SetTransform(D3DTS_PROJECTION, &matProjection);    // set the projection
-	
-	
-	D3DXMATRIX matRotateY; // a matrix to store the rotation for each triangle 
-	static float index = 0.0f; index+=0.05f; // an ever-increasing float value // build MULTIPLE matrices to translate the model and one to rotate 
-	D3DXMatrixRotationY(&matRotateY, index); // the front side // tell Direct3D about each world transform, and then draw another triangle 
-	graphicsDevice->SetTransform(D3DTS_WORLD, &(matRotateY) ); 
-
-	// select the vertex buffer to display
-    graphicsDevice->SetStreamSource(0, modelVertexBuffer, 0, sizeof(VertexItem));
-	graphicsDevice->SetIndices(indexBuffer);
-
-	graphicsDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 24, 0, 12);
 }
 
 /*
@@ -563,15 +434,12 @@ void DirectXGraphics::renderGUIRenderList()
 		rect = NULL;
 		itemToRender = guiRenderList->next();
 
-
 		// LET'S GET THE TEXTURE WE WANT TO RENDER
 		int id = itemToRender.id;
 		texture = ((DirectXTextureManager*)guiTextureManager)->getTexture(id);
 		D3DXVECTOR3 position = D3DXVECTOR3(	(FLOAT)(itemToRender.x),
 											(FLOAT)(itemToRender.y),
 											0);
-
-
 
 		// RENDER THE OPAQUE ITEMS
 		if (itemToRender.a == 255)
@@ -587,6 +455,24 @@ void DirectXGraphics::renderGUIRenderList()
 			}
 		}
 			
+		// RENDER THE ITEMS WITH EG TRANSPARENCY
+		else
+		{
+			if (itemToRender.a < 0)
+				itemToRender.a = 0;
+			else if (itemToRender.a > 255)
+				itemToRender.a = 255;
+
+			if (FAILED(spriteHandler->Draw(
+					texture,
+					rect,
+					NULL,
+					&position,
+					D3DCOLOR_ARGB(itemToRender.a, 255, 255, 255))))
+			{
+				game->getText()->writeDebugOutput("\nspriteHandler->Draw: FAILED");
+			}
+		}
 	}
 
 	// NOW EMPTY THE LIST, WE'RE ALL DONE WITH IT
@@ -613,7 +499,6 @@ void DirectXGraphics::renderWorldRenderList()
 			delete rect;
 		rect = NULL;
 		itemToRender = worldRenderList->next();
-
 //		if (itemToRender != NULL)
 		{
 			// LET'S GET THE TEXTURE WE WANT TO RENDER
@@ -622,16 +507,18 @@ void DirectXGraphics::renderWorldRenderList()
 			D3DXVECTOR3 position = D3DXVECTOR3(	(FLOAT)(itemToRender.x),
 												(FLOAT)(itemToRender.y),
 												0);
-		
 
-			position.x += viewport->getViewportOffsetX();
-			position.y += viewport->getViewportOffsetY();
-			
-			// ADJUST FOR THE GUI OFFSET
-			if ((position.x < viewport->getViewportOffsetX())
-			||  (position.y < viewport->getViewportOffsetY()))
+			// IF IT'S IN THE GAME WORLD IT NEEDS TO BE OFFSET
+//			if (needsToBeOffset)
 			{
-				IDirect3DSurface9 *surface;
+				position.x += viewport->getViewportOffsetX();
+				position.y += viewport->getViewportOffsetY();
+
+				// ADJUST FOR THE GUI OFFSET
+				if ((position.x < viewport->getViewportOffsetX())
+				||  (position.y < viewport->getViewportOffsetY()))
+				{
+					IDirect3DSurface9 *surface;
 					UINT level = 0;
 					HRESULT result = texture->GetSurfaceLevel(level, &surface);
 					D3DSURFACE_DESC surfaceDescription;
@@ -653,12 +540,7 @@ void DirectXGraphics::renderWorldRenderList()
 						rect->top = yDiff;
 						position.y += yDiff;
 					}	
-
-					if(surface)
-					{
-						int refs = surface->Release();
-						surface = NULL;
-					}
+				}
 			}
 
 			// RENDER THE OPAQUE ITEMS
@@ -675,30 +557,31 @@ void DirectXGraphics::renderWorldRenderList()
 				}
 			}
 			
+			// RENDER THE ITEMS WITH CUSTOM TRANSPARENCY
+			else
+			{
+				if (itemToRender.a < 0)
+					itemToRender.a = 0;
+				else if (itemToRender.a > 255)
+					itemToRender.a = 255;
 
+				if (FAILED(spriteHandler->Draw(
+						texture,
+						rect,
+						NULL,
+						&position,
+						D3DCOLOR_ARGB(itemToRender.a, 255, 255, 255))))
+				{
+					game->getText()->writeDebugOutput("\nspriteHandler->Draw: FAILED");
+				}
+			}
 		}
-	
 	}
 
 	// NOW EMPTY THE LIST, WE'RE ALL DONE WITH IT
 	worldRenderList->clear();
 	if (rect != NULL)
 		delete rect;
-}
-
-void DirectXGraphics::renderVertexList(Game * game)
-{
-	// select which vertex format we are using
-    graphicsDevice->SetFVF(D3DFVF_XYZ | D3DFVF_NORMAL);
-
-	pipeline(game);
-
-    // copy the vertex buffer to the back buffer
-   // graphicsDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
-
-	// NOW EMPTY THE LIST, WE'RE ALL DONE WITH IT
-	//modelVertexList->clear();
-
 }
 
 
@@ -718,13 +601,60 @@ void DirectXGraphics::renderGame(Game *game)
 		// BATCH TEXTURE RENDERING
 		startDirectXFrameRendering();	
 
-		renderVertexList(game);
+
+		static float currentFrame = 0;
+		currentFrame++;
+		if(currentFrame > 10)
+			currentFrame = 0;
+
+	D3DXMATRIX matView;    // the view transform matrix
+
+    D3DXMatrixLookAtLH(&matView,
+	&D3DXVECTOR3 (0, 0, 30),    // the camera position
+                       &D3DXVECTOR3 (0, 0, 0),    // the look-at position
+                       &D3DXVECTOR3 (0, 1, 0));    // the up direction
+
+	graphicsDevice->SetTransform(D3DTS_VIEW, &matView);    // set the view transform to matView
+
+	D3DXMATRIX matProjection;     // the projection transform matrix
+
+    D3DXMatrixPerspectiveFovLH(&matProjection,
+                               D3DXToRadian(45),    // the horizontal field of view
+                               (FLOAT)1024/ (FLOAT)768, // aspect ratio
+                               0.1f,    // the near view-plane
+                               100.0f);    // the far view-plane
+
+    graphicsDevice->SetTransform(D3DTS_PROJECTION, &matProjection);  
+	
+	D3DXMATRIX matRotateY; // a matrix to store the rotation for each triangle 
+	D3DXMatrixRotationY(&matRotateY, D3DX_PI); // the front side // tell Direct3D about each world transform, and then draw another triangle 
+	//graphicsDevice->SetTransform(D3DTS_WORLD, &matRotateY );
+
+	D3DXMATRIX matTranslate;    // a matrix to store the translation information
+
+	// build a matrix to move the model 12 units along the x-axis and 4 units along the y-axis
+	// store it to matTranslate
+	D3DXMatrixTranslation(&matTranslate, 2.0f, -5.0f, 0.0f);
+
+	// tell Direct3D about our matrix
+	graphicsDevice->SetTransform(D3DTS_WORLD, &(matRotateY *matTranslate));
+
+	D3DXMATRIX identity;
+
+	D3DXMatrixIdentity(&identity);
+
+	drummer->SetPose(identity, currentFrame/300);
+	
+	for(int i = 0; i < 8; i++)
+		mesh->DrawSubset(i);
+
+	drummer->Render((matRotateY *matTranslate));
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
 		// RENDER THE WORLD RENDER LIST
 		renderWorldRenderList();
-
+		
 		// RENDER THE GUI RENDER LIST
 		renderGUIRenderList();
 
@@ -771,20 +701,16 @@ void DirectXGraphics::renderGame(Game *game)
 	renderTextToDraw - This method renders a single piece of
 	text to the screen using our EG font.
 */
-void DirectXGraphics::renderTextToDraw(TextToDraw *textToDraw)
+void DirectXGraphics::renderTextToDraw(TextToDraw textToDraw)
 {
-	textRect.left = textToDraw->x;
-	textRect.right = textToDraw->x + textToDraw->width;
-	textRect.top = textToDraw->y;
-	textRect.bottom = textToDraw->y + textToDraw->height;
- 
-	wstring txt = textToDraw->getText();
-	std::string temp(txt.length(), ' ');  
-    std::copy(txt.begin(), txt.end(), temp.begin()); 
-
-	if (FAILED(textFont->DrawTextA(
+	textRect.left = textToDraw.x;
+	textRect.right = textToDraw.x + textToDraw.width;
+	textRect.top = textToDraw.y;
+	textRect.bottom = textToDraw.y + textToDraw.height;
+	LPCWSTR lpcwstrText = (*textToDraw.getText()).c_str();
+	if (FAILED(textFont->DrawText (
 				spriteHandler, 
-				temp.c_str(), 
+				lpcwstrText, 
 				-1, 
 				&textRect, 
 				DT_LEFT, 
@@ -815,61 +741,32 @@ void DirectXGraphics::setFontColor(int r, int g, int b)
 */
 void DirectXGraphics::shutdown()
 {
-	/*if(worldVertexBuffer)
-	{
-		worldVertexBuffer->Release();
-		worldVertexBuffer =  NULL;
-	}
-
-	if(guiVertexBuffer)
-	{
-		guiVertexBuffer->Release();
-		guiVertexBuffer =  NULL;
-	}*/
-	
-	if(indexBuffer)
-	{
-		int d = indexBuffer->Release();
-		indexBuffer =  NULL;
-	}
-
-	if(modelVertexBuffer)
-	{
-		int d = modelVertexBuffer->Release();
-		modelVertexBuffer =  NULL;
-	}
-
-	graphicsDevice->SetTexture(0, NULL);
-	worldTextureManager->clear();
-	guiTextureManager->clear();
+	if(mesh)
+		mesh->Release();
 
 	if (textFont)
 	{
-		int d = textFont->Release();
+		textFont->Release();
 		textFont = NULL;
 	}
 
 	if (spriteHandler)
 	{
-		int d = spriteHandler->Release();
+		spriteHandler->Release();
 		spriteHandler = NULL;
 	}
- 
+
 	if (graphicsDevice)
 	{
-		int d = graphicsDevice->Release();
-		//if (graphicsDevice)
-	
-		//graphicsDevice->Release();
+		graphicsDevice->Release();
 		graphicsDevice = NULL;
 	}
 
 	if (d3d)
 	{
-		int d = d3d->Release();
+		d3d->Release();
 		d3d = NULL;
-	}
-}
+	}}
 
 /*
 	startDirectXFrameRendering - This does some setup for rendering, like locking
@@ -877,14 +774,11 @@ void DirectXGraphics::shutdown()
 */
 void DirectXGraphics::startDirectXFrameRendering()
 {
-	 
 	// CLEAR OUT ALL THE OLD RENDERING
     if (FAILED(graphicsDevice->Clear(0, NULL, D3DCLEAR_TARGET, BACKGROUND_COLOR, 1.0f, 0)))
 		game->getText()->writeDebugOutput("\ngraphicsDevice->Clear(): FAILED");
 
-	if(FAILED(graphicsDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 200, 100), 1.0f, 0)))
-		game->getText()->writeDebugOutput("\ngraphicsDevice->Clear(): FAILED");
-
+	graphicsDevice->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	// ALLOWS DRAWING TO START, LOCKING THE GPU
     if (FAILED(graphicsDevice->BeginScene()))

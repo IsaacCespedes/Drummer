@@ -54,8 +54,6 @@ public:
 	World();
 	~World();
 	void	addLayer(WorldLayer *layerToAdd);
-	void	addNote(int x, int y);
-	void	removeNote(int x, int y);
 	void	addWorldRenderItemsToRenderList(Game *game);
 	void	unloadWorld();
 	void	update(Game *game);

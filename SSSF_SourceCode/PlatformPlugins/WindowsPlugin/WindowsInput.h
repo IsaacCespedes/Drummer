@@ -40,6 +40,7 @@ public:
 	void initInputState();
 	void updateInputState();
 	void updateCursorPosition(Game *game, WINDOWINFO wi, Cursor *cursor);
+	void updateViewportOffsets(WINDOWINFO wi, Game * game);
 	void processInput(Game *game);
 	void respondToMouseInput(Game *game);
 	void shutdown();

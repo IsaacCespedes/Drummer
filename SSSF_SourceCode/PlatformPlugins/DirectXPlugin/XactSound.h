@@ -14,21 +14,27 @@
 //-----------------------------------------------------------------------------
 struct AUDIO_STATE
 {
+	//XACTINDEX	iDrum;
+	//XACTINDEX	iSong;
+
+	//XACTCATEGORY iDrumCategory;
+	//XACTCATEGORY iMusicCategory;
+	//XACTCATEGORY iGlobalCategory;
+
+	//bool bMusicPaused;
+   // float fMusicVolume;
+
+   // bool bGlobalPaused;
+   //float fGlobalVolume;
+
     IXACT3Engine* pEngine;
 	IXACT3SoundBank* pSoundBank;
-    IXACT3WaveBank* pInMemoryWaveBank;
-	IXACT3WaveBank* pStreamingWaveBank;
+    IXACT3WaveBank* pWaveBank;
+	//IXACT3Cue* pMusicCue;
 
-	IXACT3Cue* pZeroLatencyRevCue;
-
-	HANDLE hStreamingWaveBankFile;
-    VOID* pbInMemoryWaveBank; // Handle to wave bank data.  Its memory mapped so call UnmapViewOfFile() upon cleanup to release file
+	// Handles to audio files to be closed upon cleanup
+    VOID* pbWaveBank; // Handle to wave bank data.  Its memory mapped so call UnmapViewOfFile() upon cleanup to release file
     VOID* pbSoundBank; // Pointer to sound bank data.  Call delete on it when the sound bank is destroyed
-
-	CRITICAL_SECTION cs;
-    bool bHandleStreamingWaveBankPrepared;
-    bool bHandleZeroLatencyCueStop;
-    bool bHandleSongStopped;
 };
 
 class XactSound : public GameSound
@@ -43,14 +49,14 @@ public:
 	HRESULT createBank();
 	HRESULT FindMediaFileCch( WCHAR* strDestPath, int cchDest, LPCWSTR strFilename );
 	bool	isThereEngine();
-	void play();
+	//void play();
 	void playSound(PCSTR soundName);
 	void	pause();
 	void	resume();
 	void shutdown();
-	void stop();
+	//void stop();
 	void work();
 	void UpdateAudio();
-	static void WINAPI XACTNotificationCallback( const XACT_NOTIFICATION* pNotification );
-	void HandleNotification( const XACT_NOTIFICATION* pNotification );
+	//static void WINAPI XACTNotificationCallback( const XACT_NOTIFICATION* pNotification );
+	//void HandleNotification( const XACT_NOTIFICATION* pNotification );
 };

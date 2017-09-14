@@ -64,17 +64,6 @@ struct RenderItem : public std::binary_function<RenderItem, RenderItem, bool>
 	};
 };
 
-struct RenderVertex
-{
-	float x;
-        float y;
-        float z;
-        float rhw;
-		D3DCOLOR colour;
-		 float u;
-        float v;
-};
-
 class RenderList
 {
 private:

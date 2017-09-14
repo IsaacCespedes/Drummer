@@ -19,7 +19,7 @@
 */
 GameText::GameText()
 {
-	textToDraw = new vector<TextToDraw*>();
+	textToDraw = new vector<TextToDraw>();
 }
 
 /*
@@ -28,12 +28,6 @@ GameText::GameText()
 */
 GameText::~GameText()
 {
-	vector<TextToDraw*> textToDelete = *textToDraw;
-	for(int i = 0; i < textToDelete.size(); i++)
-	{
-		delete textToDelete[i];
-	}
-	textToDraw->clear();
 	delete textToDraw;
 }
 
@@ -41,18 +35,18 @@ GameText::~GameText()
 	addText - This method adds text for rendering. Text only needs to
 	be added once.
 */
-void GameText::addText(wstring textToAdd,
+void GameText::addText(wstring *textToAdd,
 					   int initX,
 					   int initY,
 					   int initWidth,
 					   int initHeight)
 {
-	TextToDraw *text = new TextToDraw();
-	text->setText(textToAdd);
-	text->x = initX;
-	text->y = initY;
-	text->width = initWidth;
-	text->height = initHeight;
+	TextToDraw text;
+	text.setText(textToAdd);
+	text.x = initX;
+	text.y = initY;
+	text.width = initWidth;
+	text.height = initHeight;
 	textToDraw->push_back(text);
 }
 
@@ -60,11 +54,12 @@ void GameText::addText(wstring textToAdd,
 	changeTextOnly - Once text is added, if we want to subsequently
 	change it, we may use this method.
 */
-void GameText::changeTextOnly(wstring textToSet, int index)
+void GameText::changeTextOnly(wstring *textToSet, int index)
 {
-	TextToDraw *textToChange = textToDraw->at(index);
-	wstring oldText = textToChange->getText();
-	textToChange->setText(textToSet);
+	TextToDraw textToChange = textToDraw->at(index);
+	wstring *oldText = textToChange.getText();
+	delete oldText;
+	textToChange.setText(textToSet);
 }
 
 /*
@@ -82,10 +77,10 @@ void GameText::initDebugFile(string debugFileName)
 */
 void GameText::moveText(int index, int xMove, int yMove)
 {
-	int x = textToDraw->at(index)->x;
-	int y = textToDraw->at(index)->y;
-	textToDraw->at(index)->x = x + xMove;
-	textToDraw->at(index)->y = y + yMove;
+	int x = textToDraw->at(index).x;
+	int y = textToDraw->at(index).y;
+	textToDraw->at(index).x = x + xMove;
+	textToDraw->at(index).y = y + yMove;
 }
 
 /*
